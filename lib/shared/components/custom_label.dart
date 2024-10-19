@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 
 class CustomLabel extends StatelessWidget {
   final String text;
-  final double size;
-  final FontWeight fontWeight;
-  final Color color;
+  final double? size;
+  final FontWeight? fontWeight;
+  final Color? color;
 
   const CustomLabel({
     super.key,
     required this.text,
-    required this.size,
-    required this.fontWeight,
-    required this.color,
+    this.size,
+    this.fontWeight,
+    this.color,
   });
 
   @override

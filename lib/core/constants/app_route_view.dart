@@ -1,10 +1,19 @@
-import 'package:almora_pedidos/features/views/home_view.dart';
+import 'package:almora_pedidos/features/views/views.dart';
 import 'package:go_router/go_router.dart';
 
 final appRoute = GoRouter(
+  initialLocation: '/',
   routes: [
     GoRoute(
-      path: '/',
+      path: LoginView.name,
+      builder: (context, state) => const LoginView(),
+    ),
+    GoRoute(
+      path: '/${RegisterView.name}',
+      builder: (context, state) => const RegisterView(),
+    ),
+    GoRoute(
+      path: '/${HomeView.name}',
       builder: (context, state) => const HomeView(),
     ),
   ],
