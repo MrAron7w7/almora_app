@@ -1,8 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<!-- Permiso para acceder a archivos en Android 11 (API 30) y superior -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+                     android:maxSdkVersion="29"/>
     <application
+        android:requestLegacyExternalStorage="true"
         android:label="almora_pedidos"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"

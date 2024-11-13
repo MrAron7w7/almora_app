@@ -1,5 +1,3 @@
-import 'package:almora_pedidos/features/models/user.dart';
-import 'package:almora_pedidos/features/viewmodels/auth/auth_repo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 /* 
@@ -13,79 +11,49 @@ import 'package:firebase_auth/firebase_auth.dart';
   en la cual hara la logica de la autenticacion
 */
 
-class FirebaseAuthRepo implements AuthRepo {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  @override
-  Future<AppUser?> loginWithEmailPassword({
+  // Obtener el usuario y su uid
+  User? getCurrentUser() => _auth.currentUser;
+  String getCurrentUid() => _auth.currentUser!.uid;
+
+  // Logearse con email y password
+  Future<UserCredential> loginWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      throw Exception('Error al iniciar sesión: ${e.code}');
+    }
+  }
+
+  // Registrarse con email y password
+  Future<UserCredential> registerWithEmailPassword({
     required String email,
     required String password,
   }) async {
     try {
       UserCredential userCredential =
-          await _firebaseAuth.signInWithEmailAndPassword(
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-
-      AppUser user = AppUser(
-        uid: userCredential.user!.uid,
-        email: email,
-        name: '',
-      );
-
-      // Retorno el user
-      return user;
-    } catch (e) {
-      throw Exception('Logeo fallido: $e');
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      throw Exception("Error al registrarse: ${e.code}");
     }
   }
 
-  @override
-  Future<AppUser?> registerWithEmailPassword({
-    required String email,
-    required String password,
-    required String name,
-  }) async {
-    try {
-      UserCredential userCredential =
-          await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      AppUser user = AppUser(
-        uid: userCredential.user!.uid,
-        email: email,
-        name: name,
-      );
-
-      // Retorno el user
-      return user;
-    } catch (e) {
-      throw Exception('Registro fallido: $e');
-    }
-  }
-
-  @override
-  Future<AppUser?> getCurrentUser() async {
-    // Obtener si el usuario esta logeado de firebae
-    final firebaseUser = _firebaseAuth.currentUser;
-
-    // Si usuario no esta logeado
-    if (firebaseUser == null) {
-      return null;
-    }
-
-    return AppUser(
-      uid: firebaseUser.uid,
-      email: firebaseUser.email!,
-      name: '',
-    );
-  }
-
-  @override
-  Future<void> logout() async {
-    await _firebaseAuth.signOut();
+  // Salir session
+  Future<void> logOut() async {
+    await _auth.signOut();
   }
 }

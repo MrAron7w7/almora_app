@@ -1,24 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 /*
   Se creara la clase User con los atributos uid, email y name
   para almacenar los datos en Firebase
 
 */
 
-class AppUser {
+class UserProfile {
   final String uid;
   final String email;
   final String name;
 
-  AppUser({
+  UserProfile({
     required this.uid,
     required this.email,
     required this.name,
   });
 
-  // firebase -> app
-  // Convierte la instancia de AppUser en un Map<String, dynamic> para almacenar en Firestore.
+  // App -> Firebase
+  // Convierte la instancia de UserProfile en un Map<String, dynamic> para almacenar en Firestore.
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'uid': uid,
       'email': email,
@@ -26,13 +27,13 @@ class AppUser {
     };
   }
 
-  // app -> firebase
-  // Crea una instancia de AppUser a partir de un Map<String, dynamic> obtenido de Firestore.
-  factory AppUser.fromJson(Map<String, dynamic> json) {
-    return AppUser(
-      uid: json['uid'] as String,
-      email: json['email'] as String,
-      name: json['name'] as String,
+  // Fireabse -> APP
+  // Crea una instancia de UserProfile a partir de un DocumentSnapshot obtenido de Firestore.
+  factory UserProfile.fromDocument(DocumentSnapshot doc) {
+    return UserProfile(
+      uid: doc['uid'],
+      email: doc['email'],
+      name: doc['name'],
     );
   }
 }

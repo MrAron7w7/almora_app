@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:almora_pedidos/core/utils/utils.dart';
-import 'package:almora_pedidos/features/views/views.dart';
+import 'package:almora_pedidos/features/viewmodels/auth/firebase_auth_repo.dart';
+import 'package:almora_pedidos/features/viewmodels/database/database_service.dart';
 import 'package:almora_pedidos/shared/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -17,11 +20,54 @@ class _RegisterViewState extends State<RegisterView> {
   final _globalKey = GlobalKey<FormState>();
 
   bool _showPassword = false;
+  bool _showConfirmPassword = false;
 
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  final AuthService _authService = AuthService();
+  final DatabaseService _db = DatabaseService();
+
+  Future<void> _register() async {
+    if (_globalKey.currentState!.validate()) {
+      if (_passwordController.text == _confirmPasswordController.text) {
+        showCircularLoading(context);
+        try {
+          await _authService.registerWithEmailPassword(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+
+          if (mounted) closeCircularLoading(context);
+
+          // Una vez registrado guardamo en el firestore
+          await _db.saveUserInToFirebase(
+            name: _nameController.text,
+            email: _emailController.text,
+          );
+
+          // ignore: use_build_context_synchronously
+          context.go('/');
+        } catch (e) {
+          if (mounted) {
+            closeCircularLoading(context);
+          }
+
+          log('Error al registrar: Register View $e');
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Contraseñas no coinciden'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -93,9 +139,7 @@ class _RegisterViewState extends State<RegisterView> {
                       keyboardType: TextInputType.name,
                       controller: _nameController,
                       validator: (String? value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            !value.contains('@')) {
+                        if (value == null || value.isEmpty) {
                           return 'Por favor ingresa un nombre';
                         }
                         return null;
@@ -168,17 +212,17 @@ class _RegisterViewState extends State<RegisterView> {
 
                     CustomInput(
                       labelText: '********',
-                      showPassword: _showPassword ? false : true,
+                      showPassword: _showConfirmPassword ? false : true,
                       keyboardType: TextInputType.visiblePassword,
                       controller: _confirmPasswordController,
                       icon: GestureDetector(
                         onTap: () {
                           setState(() {
-                            _showPassword = !_showPassword;
+                            _showConfirmPassword = !_showConfirmPassword;
                           });
                         },
                         child: Icon(
-                          _showPassword
+                          _showConfirmPassword
                               ? Icons.visibility_off
                               : Icons.visibility,
                         ),
@@ -197,9 +241,7 @@ class _RegisterViewState extends State<RegisterView> {
                       alignment: Alignment.center,
                       child: CustomButton(
                         text: 'Registrarse',
-                        onTap: () {
-                          context.pop();
-                        },
+                        onTap: _register,
                       ),
                     ),
                     Row(
@@ -209,7 +251,7 @@ class _RegisterViewState extends State<RegisterView> {
                           text: 'No tienes cuenta?',
                         ),
                         TextButton(
-                          onPressed: () => context.go('/${LoginView.name}'),
+                          onPressed: () => context.pop(),
                           child: const CustomLabel(text: 'Iniciar sesión'),
                         ),
                       ],

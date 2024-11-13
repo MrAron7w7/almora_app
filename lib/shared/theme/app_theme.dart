@@ -9,10 +9,11 @@ class AppTheme {
   static ThemeData get appTheme => ThemeData(
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
+          scrolledUnderElevation: 0.0,
           backgroundColor: Colors.white,
         ),
         colorScheme: const ColorScheme.light(
-          primary: Color(0xfff99f1c),
+          primary: Color(0xffF7B82B),
           secondary: Color(0xffd3d2d1),
         ),
       );

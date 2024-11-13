@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "918142675573",
+    "project_id": "almoraapp",
+    "storage_bucket": "almoraapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918142675573:android:38a2f2124c60ae62f7e63c",
+        "android_client_info": {
+          "package_name": "com.example.almora_pedidos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKnt3gU93LNmEsLFxdGMLV3GG7twufJ2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
